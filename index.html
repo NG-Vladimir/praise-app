@@ -10,272 +10,68 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #0f0e17;
-      --surface: #1a1926;
-      --surface2: #242336;
-      --text: #e8e6f0;
-      --text-muted: #8b8798;
-      --accent: #d4a853;
-      --accent-soft: rgba(212, 168, 83, 0.2);
-      --success: #4ade80;
-      --danger: #f87171;
-      --radius: 16px;
-      --radius-sm: 10px;
-      --shadow: 0 4px 24px rgba(0,0,0,0.25);
+      --bg: #0f0e17; --surface: #1a1926; --surface2: #242336;
+      --text: #e8e6f0; --text-muted: #8b8798; --accent: #d4a853;
+      --accent-soft: rgba(212, 168, 83, 0.2); --success: #4ade80; --danger: #f87171;
+      --radius: 16px; --radius-sm: 10px; --shadow: 0 4px 24px rgba(0,0,0,0.25);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      height: 100%;
-      min-height: 100%;
-      overflow-x: hidden;
-    }
+    html, body { height: 100%; min-height: 100%; overflow-x: hidden; }
     body {
       font-family: 'Manrope', -apple-system, sans-serif;
-      min-height: 100vh;
-      min-height: 100dvh;
-      min-height: var(--tg-viewport-height, 100dvh);
-      background: var(--bg);
-      color: var(--text);
-      padding: 0;
-      padding-top: env(safe-area-inset-top, 0);
+      min-height: 100vh; min-height: 100dvh;
+      background: var(--bg); color: var(--text);
+      padding: 0; padding-top: env(safe-area-inset-top, 0);
       padding-bottom: max(100px, env(safe-area-inset-bottom, 20px));
     }
-    .app {
-      max-width: 480px;
-      margin: 0 auto;
-      min-height: 100%;
-    }
+    .app { max-width: 480px; margin: 0 auto; min-height: 100%; }
     header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: var(--surface);
-      padding: 16px 20px 20px;
+      position: sticky; top: 0; z-index: 10;
+      background: var(--surface); padding: 16px 20px 20px;
       border-bottom: 1px solid var(--surface2);
       padding-top: max(16px, env(safe-area-inset-top, 0px));
     }
     header h1 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-size: 1.35rem; font-weight: 700;
       background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .tabs {
-      display: flex;
-      gap: 4px;
-      margin-top: 16px;
-      background: var(--surface2);
-      padding: 4px;
-      border-radius: var(--radius-sm);
-    }
-    .tabs button {
-      flex: 1;
-      padding: 10px 14px;
-      border: none;
-      border-radius: 8px;
-      background: transparent;
-      color: var(--text-muted);
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .tabs button.active {
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
+    .tabs { display: flex; gap: 4px; margin-top: 16px; background: var(--surface2); padding: 4px; border-radius: var(--radius-sm); }
+    .tabs button { flex: 1; padding: 10px 14px; border: none; border-radius: 8px; background: transparent; color: var(--text-muted); font-family: inherit; font-size: 0.9rem; font-weight: 500; cursor: pointer; }
+    .tabs button.active { background: var(--accent-soft); color: var(--accent); }
     .screen { display: none; padding: 20px; }
     .screen.active { display: block; animation: fade 0.25s ease; }
     @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-
     .card {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      margin-bottom: 12px;
-      border: 1px solid var(--surface2);
-      box-shadow: var(--shadow);
+      background: var(--surface); border-radius: var(--radius); padding: 18px 20px;
+      margin-bottom: 12px; border: 1px solid var(--surface2); box-shadow: var(--shadow);
     }
-    .card-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--accent);
-      margin-bottom: 4px;
-    }
-    .card h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .card p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-family: inherit;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
+    .card-title { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 4px; }
+    .card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+    .card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 14px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border: none; border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
     .btn:active { transform: scale(0.98); }
-    .btn-primary {
-      background: linear-gradient(135deg, #c9972e 0%, var(--accent) 100%);
-      color: #0f0e17;
-      box-shadow: 0 4px 14px rgba(212, 168, 83, 0.35);
-    }
-    .btn-ghost {
-      background: var(--surface2);
-      color: var(--text);
-    }
-    .btn-danger {
-      background: rgba(248, 113, 113, 0.2);
-      color: var(--danger);
-    }
+    .btn-primary { background: linear-gradient(135deg, #c9972e 0%, var(--accent) 100%); color: #0f0e17; }
+    .btn-ghost { background: var(--surface2); color: var(--text); }
+    .btn-danger { background: rgba(248, 113, 113, 0.2); color: var(--danger); }
     .btn-sm { padding: 8px 14px; font-size: 0.85rem; }
-    .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 12px; }
-
-    .empty-state {
-      text-align: center;
-      padding: 48px 24px;
-      color: var(--text-muted);
-    }
-    .empty-state svg {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 16px;
-      opacity: 0.5;
-    }
-    .empty-state p { margin-bottom: 20px; font-size: 0.95rem; }
-
-    .member-list { list-style: none; }
-    .member-list li {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      background: var(--surface2);
-      border-radius: var(--radius-sm);
-      margin-bottom: 8px;
-      transition: background 0.2s;
-    }
-    .member-list li:active { background: var(--surface); }
-    .member-name { font-weight: 500; }
-    .member-actions { display: flex; gap: 8px; }
-    .member-actions .btn { padding: 6px 12px; font-size: 0.8rem; }
-
-    .add-member-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 16px 20px;
-      padding-bottom: max(16px, env(safe-area-inset-bottom));
-      background: var(--surface);
-      border-top: 1px solid var(--surface2);
-      display: flex;
-      gap: 10px;
-      z-index: 5;
-    }
-    .add-member-bar input {
-      flex: 1;
-      padding: 14px 18px;
-      border: 1px solid var(--surface2);
-      border-radius: var(--radius-sm);
-      background: var(--surface2);
-      color: var(--text);
-      font-family: inherit;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .add-member-bar input::placeholder { color: var(--text-muted); }
-    .add-member-bar input:focus { border-color: var(--accent); }
-
-    .roles-grid { display: flex; flex-direction: column; gap: 10px; }
-    .role-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      background: var(--surface2);
-      border-radius: var(--radius-sm);
-      gap: 12px;
-    }
-    .role-label {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      min-width: 100px;
-    }
-    .role-select {
-      flex: 1;
-      padding: 10px 14px;
-      border: 1px solid var(--surface2);
-      border-radius: 8px;
-      background: var(--surface);
-      color: var(--text);
-      font-family: inherit;
-      font-size: 0.9rem;
-      cursor: pointer;
-      outline: none;
-    }
-    .role-select:focus { border-color: var(--accent); }
-    .role-row.leader .role-label { color: var(--accent); font-weight: 600; }
-
-    .form-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1px solid var(--surface2);
-    }
-    .form-actions .btn { flex: 1; }
-
-    .team-preview {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed var(--surface2);
-    }
-    .team-preview .role-row { padding: 8px 0; margin-bottom: 0; background: transparent; }
-    .team-preview .role-row .role-label { min-width: 90px; font-size: 0.8rem; }
-    .team-preview .role-row .role-select { border: none; background: transparent; padding: 0; cursor: default; }
-
-    .service-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .service-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
     .service-badge.tuesday { background: rgba(212, 168, 83, 0.25); color: var(--accent); }
     .service-badge.sunday { background: rgba(74, 222, 128, 0.2); color: var(--success); }
-
-    .back-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .back-bar .btn-ghost { padding: 8px 12px; }
+    .participant-list { font-size: 0.9rem; color: var(--text-muted); margin: 8px 0; }
+    .participant-list span { display: inline-block; margin-right: 8px; margin-bottom: 4px; }
+    .role-row { display: flex; align-items: center; padding: 12px 16px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 8px; gap: 12px; }
+    .role-row input[type="radio"] { width: 18px; height: 18px; accent-color: var(--accent); }
+    .role-row label { flex: 1; cursor: pointer; }
+    .back-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--text-muted); }
+    .member-list { list-style: none; }
+    .member-list li { display: flex; align-items: center; padding: 14px 16px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 8px; }
+    .member-name { font-weight: 500; flex: 1; }
+    .loading { text-align: center; padding: 20px; color: var(--text-muted); }
+    .error-msg { color: var(--danger); font-size: 0.9rem; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -284,49 +80,30 @@
       <h1>Команда прославления</h1>
       <nav class="tabs">
         <button type="button" data-tab="services" class="active">Служения</button>
-        <button type="button" data-tab="members">Участники</button>
+        <button type="button" data-tab="participants">Участники</button>
       </nav>
     </header>
-
     <main id="main">
-      <!-- Экран: Служения -->
       <section id="screen-services" class="screen active">
         <div id="services-list"></div>
-        <div id="services-empty" class="empty-state" style="display:none">
-          <p>Нет предстоящих служений. Добавьте участников и сформируйте команду.</p>
-        </div>
+        <div id="services-loading" class="loading">Загрузка...</div>
+        <div id="services-empty" class="empty-state" style="display:none"><p>Нет предстоящих служений.</p></div>
       </section>
-
-      <!-- Экран: Участники -->
-      <section id="screen-members" class="screen">
-        <ul id="members-list" class="member-list"></ul>
-        <div id="members-empty" class="empty-state" style="display:none">
-          <p>Пока нет участников. Добавьте первого ниже.</p>
-        </div>
-        <div class="add-member-bar">
-          <input type="text" id="new-member-name" placeholder="Имя участника" maxlength="80" />
-          <button type="button" class="btn btn-primary btn-icon" id="btn-add-member" title="Добавить">+</button>
-        </div>
+      <section id="screen-participants" class="screen">
+        <ul id="participants-list" class="member-list"></ul>
+        <div id="participants-loading" class="loading">Загрузка...</div>
+        <div id="participants-empty" class="empty-state" style="display:none"><p>Пока нет участников.</p></div>
       </section>
-
-      <!-- Экран: Формирование команды -->
-      <section id="screen-form" class="screen">
-        <div class="back-bar">
-          <button type="button" class="btn btn-ghost" id="btn-back-form">← Назад</button>
-          <span id="form-service-title" style="color: var(--text-muted); font-size: 0.9rem;"></span>
-        </div>
+      <section id="screen-participate" class="screen">
+        <div class="back-bar"><button type="button" class="btn btn-ghost btn-sm" id="btn-back-participate">← Назад</button><span id="participate-service-title" style="color:var(--text-muted);font-size:0.9rem"></span></div>
         <div class="card">
-          <div class="card-title">Состав команды</div>
-          <div id="form-roles" class="roles-grid"></div>
-          <div class="form-actions">
-            <button type="button" class="btn btn-ghost" id="btn-clear-team">Очистить</button>
-            <button type="button" class="btn btn-primary" id="btn-save-team">Сохранить</button>
-          </div>
+          <div class="card-title">Выбери свою роль</div>
+          <div id="participate-roles"></div>
+          <button type="button" class="btn btn-primary" id="btn-save-participate" style="margin-top:16px">Сохранить</button>
         </div>
       </section>
     </main>
   </div>
-
   <script>
     (function() {
       const ROLES = [
@@ -337,66 +114,26 @@
         { id: 'vocal1', label: 'Вокалист 1' },
         { id: 'vocal2', label: 'Вокалист 2' }
       ];
-      const STORAGE_MEMBERS = 'praise_members';
-      const STORAGE_SERVICES = 'praise_services';
-
-      function getNextTuesdaysAndSundays(count) {
-        const out = [];
-        const d = new Date();
-        d.setHours(0, 0, 0, 0);
-        let tues = 0, sun = 0;
-        for (let i = 0; i < 365 && (tues < count || sun < count); i++) {
-          const day = d.getDay();
-          if (day === 2 && tues < count) {
-            out.push({ id: 'tue-' + d.getTime(), date: new Date(d), type: 'tuesday', label: 'Вторничное служение' });
-            tues++;
-          }
-          if (day === 0 && sun < count) {
-            out.push({ id: 'sun-' + d.getTime(), date: new Date(d), type: 'sunday', label: 'Воскресное служение' });
-            sun++;
-          }
-          d.setDate(d.getDate() + 1);
-        }
-        return out.sort((a, b) => a.date - b.date).slice(0, count * 2);
+      function getApiUrl() {
+        const p = new URLSearchParams(location.search);
+        return p.get('api') || '';
       }
-
-      function loadMembers() {
-        try {
-          const raw = localStorage.getItem(STORAGE_MEMBERS);
-          return raw ? JSON.parse(raw) : [];
-        } catch (_) { return []; }
-      }
-      function saveMembers(arr) {
-        localStorage.setItem(STORAGE_MEMBERS, JSON.stringify(arr));
-      }
-      function loadServices() {
-        try {
-          const raw = localStorage.getItem(STORAGE_SERVICES);
-          return raw ? JSON.parse(raw) : {};
-        } catch (_) { return {}; }
-      }
-      function saveServices(obj) {
-        localStorage.setItem(STORAGE_SERVICES, JSON.stringify(obj));
-      }
-
-      let members = loadMembers();
-      let servicesData = loadServices();
-      let currentFormServiceId = null;
-
       const tg = window.Telegram?.WebApp;
+      function getCurrentUser() {
+        const u = tg?.initDataUnsafe?.user;
+        return u ? { id: u.id, first_name: u.first_name, username: u.username } : null;
+      }
       if (tg) {
         tg.ready();
         tg.expand();
-        if (typeof tg.requestFullscreen === 'function') {
-          tg.requestFullscreen();  // полный экран без панелей Telegram
-        }
+        if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen();
         tg.enableClosingConfirmation();
-        document.documentElement.style.setProperty('--tg-viewport-height', (tg.viewportHeight || window.innerHeight) + 'px');
-        if (tg.safeAreaInset) {
-          document.documentElement.style.setProperty('--safe-top', tg.safeAreaInset.top + 'px');
-          document.documentElement.style.setProperty('--safe-bottom', tg.safeAreaInset.bottom + 'px');
-        }
       }
+      let apiBase = getApiUrl();
+      let servicesData = [];
+      let participantsData = [];
+      let currentParticipateServiceId = null;
+      let selectedRole = null;
 
       function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -405,154 +142,166 @@
         document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
       }
 
-      function formatDate(d) {
+      function formatDate(dateStr) {
+        const d = new Date(dateStr + 'T12:00:00');
         return d.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' });
       }
 
-      function getTeam(serviceId) {
-        return servicesData[serviceId] || { leaderId: '', drummerId: '', keysId: '', bassId: '', vocal1Id: '', vocal2Id: '' };
+      async function api(path, body) {
+        if (!apiBase) throw new Error('API не настроен. Укажи API_URL в .env и перезапусти бота.');
+        const url = apiBase.replace(/\/$/, '') + path;
+        const res = await fetch(url, {
+          method: body ? 'POST' : 'GET',
+          headers: body ? { 'Content-Type': 'application/json' } : {},
+          body: body ? JSON.stringify(body) : undefined,
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Ошибка запроса');
+        return data;
       }
-      function setTeam(serviceId, team) {
-        servicesData[serviceId] = team;
-        saveServices(servicesData);
+
+      async function loadServices() {
+        if (!apiBase) {
+          document.getElementById('services-loading').style.display = 'none';
+          document.getElementById('services-empty').style.display = 'block';
+          document.getElementById('services-empty').innerHTML = '<p>API не настроен.<br>Добавь API_URL в .env и перезапусти бота.</p>';
+          return;
+        }
+        try {
+          servicesData = await api('/api/services');
+          renderServices();
+        } catch (e) {
+          document.getElementById('services-loading').innerHTML = '<span class="error-msg">' + (e.message || 'Ошибка загрузки') + '</span>';
+        } finally {
+          document.getElementById('services-loading').style.display = 'none';
+        }
+      }
+
+      async function loadParticipants() {
+        if (!apiBase) return;
+        try {
+          participantsData = await api('/api/participants');
+          renderParticipants();
+        } catch (e) {
+          document.getElementById('participants-loading').innerHTML = '<span class="error-msg">' + (e.message || '') + '</span>';
+        } finally {
+          document.getElementById('participants-loading').style.display = 'none';
+        }
+      }
+
+      async function ensureMe() {
+        const user = getCurrentUser();
+        if (apiBase && user) await api('/api/me', { user }).catch(() => {});
       }
 
       function renderServices() {
         const list = document.getElementById('services-list');
         const empty = document.getElementById('services-empty');
-        const services = getNextTuesdaysAndSundays(4);
-        if (services.length === 0) {
+        if (!servicesData.length) {
           list.innerHTML = '';
           empty.style.display = 'block';
           return;
         }
         empty.style.display = 'none';
-        list.innerHTML = services.map(s => {
-          const team = getTeam(s.id);
-          const leader = members.find(m => m.id === team.leaderId);
-          const filled = [team.leaderId, team.drummerId, team.keysId, team.bassId, team.vocal1Id, team.vocal2Id].filter(Boolean).length;
+        const user = getCurrentUser();
+        const myId = user ? user.id : null;
+        list.innerHTML = servicesData.map(s => {
+          const parts = s.participants || {};
+          const partList = Object.entries(parts).map(([role, p]) => ROLES.find(r => r.id === role)?.label + ': ' + (p.name || '?')).join(', ');
+          const count = s.count || 0;
+          const formed = s.formed;
+          const amLeader = parts.leader && parts.leader.tg_user_id === myId;
+          const myReg = Object.entries(parts).find(([, p]) => p.tg_user_id === myId);
+          const canParticipate = !formed && !myReg;
           return `
             <div class="card">
               <span class="service-badge ${s.type}">${s.type === 'tuesday' ? 'Вторник' : 'Воскресенье'}</span>
               <h3>${formatDate(s.date)}</h3>
-              <p>${leader ? 'Лидер: ' + leader.name : 'Команда не сформирована'}</p>
-              <button type="button" class="btn btn-primary btn-sm" data-service-id="${s.id}" data-service-label="${s.label} — ${formatDate(s.date)}">${filled === 6 ? 'Изменить состав' : 'Сформировать команду'}</button>
+              <p>Участников: ${count}</p>
+              ${partList ? '<div class="participant-list">' + partList + '</div>' : ''}
+              ${formed ? '<p style="color:var(--success)">✅ Команда сформирована</p>' : ''}
+              ${!formed && canParticipate ? '<button type="button" class="btn btn-primary btn-sm" data-service-id="' + s.id + '" data-date="' + s.date + '">Участвовать</button>' : ''}
+              ${!formed && amLeader ? '<button type="button" class="btn btn-ghost btn-sm" data-form="' + s.id + '" style="margin-top:8px">Сформировать команду</button>' : ''}
             </div>
           `;
         }).join('');
         list.querySelectorAll('[data-service-id]').forEach(btn => {
-          btn.addEventListener('click', () => openForm(btn.dataset.serviceId, btn.dataset.serviceLabel));
+          btn.addEventListener('click', () => openParticipate(btn.dataset.serviceId, btn.dataset.date));
+        });
+        list.querySelectorAll('[data-form]').forEach(btn => {
+          btn.addEventListener('click', () => formTeam(btn.dataset.form));
         });
       }
 
-      function openForm(serviceId, title) {
-        currentFormServiceId = serviceId;
-        document.getElementById('form-service-title').textContent = title;
-        const team = getTeam(serviceId);
-        const container = document.getElementById('form-roles');
-        container.innerHTML = ROLES.map(r => {
-          const value = team[r.id + 'Id'] || '';
-          const options = '<option value="">— не выбран —</option>' + members.map(m =>
-            `<option value="${m.id}" ${m.id === value ? 'selected' : ''}>${escapeHtml(m.name)}</option>`
-          ).join('');
-          const isLeader = r.id === 'leader';
-          return `
-            <div class="role-row ${isLeader ? 'leader' : ''}">
-              <span class="role-label">${r.label}</span>
-              <select class="role-select" data-role="${r.id}">${options}</select>
-            </div>
-          `;
+      function openParticipate(serviceId, dateStr) {
+        currentParticipateServiceId = serviceId;
+        selectedRole = null;
+        document.getElementById('participate-service-title').textContent = formatDate(dateStr);
+        const s = servicesData.find(x => x.id === serviceId);
+        const taken = s ? Object.keys(s.participants || {}) : [];
+        document.getElementById('participate-roles').innerHTML = ROLES.map(r => {
+          const disabled = taken.includes(r.id);
+          return `<div class="role-row"><input type="radio" name="role" id="r-${r.id}" value="${r.id}" ${disabled ? 'disabled' : ''}><label for="r-${r.id}">${r.label}${disabled ? ' (занято)' : ''}</label></div>`;
         }).join('');
-        showScreen('form');
-      }
-
-      function escapeHtml(s) {
-        const div = document.createElement('div');
-        div.textContent = s;
-        return div.innerHTML;
-      }
-
-      document.getElementById('btn-back-form').addEventListener('click', () => {
-        showScreen('services');
-        renderServices();
-      });
-
-      document.getElementById('btn-save-team').addEventListener('click', () => {
-        if (!currentFormServiceId) return;
-        const team = {};
-        ROLES.forEach(r => {
-          const sel = document.querySelector(`.role-select[data-role="${r.id}"]`);
-          if (sel) team[r.id + 'Id'] = sel.value || '';
+        document.getElementById('participate-roles').querySelectorAll('input[name="role"]').forEach(inp => {
+          inp.addEventListener('change', () => { selectedRole = inp.value; });
         });
-        setTeam(currentFormServiceId, team);
-        showScreen('services');
-        renderServices();
-      });
+        showScreen('participate');
+      }
 
-      document.getElementById('btn-clear-team').addEventListener('click', () => {
-        if (!currentFormServiceId) return;
-        if (confirm('Очистить состав команды для этого служения?')) {
-          setTeam(currentFormServiceId, {});
-          openForm(currentFormServiceId, document.getElementById('form-service-title').textContent);
+      document.getElementById('btn-back-participate').addEventListener('click', () => { showScreen('services'); loadServices(); });
+
+      document.getElementById('btn-save-participate').addEventListener('click', async () => {
+        const role = document.querySelector('input[name="role"]:checked')?.value || selectedRole;
+        if (!role || !currentParticipateServiceId) return alert('Выбери роль');
+        const user = getCurrentUser();
+        if (!user) return alert('Нужно открыть приложение из Telegram');
+        try {
+          document.getElementById('btn-save-participate').disabled = true;
+          await api('/api/participate', { service_id: currentParticipateServiceId, role, user });
+          showScreen('services');
+          loadServices();
+          loadParticipants();
+        } catch (e) {
+          alert(e.message || 'Ошибка');
+        } finally {
+          document.getElementById('btn-save-participate').disabled = false;
         }
       });
 
-      function renderMembers() {
-        const list = document.getElementById('members-list');
-        const empty = document.getElementById('members-empty');
-        if (members.length === 0) {
+      async function formTeam(serviceId) {
+        const user = getCurrentUser();
+        if (!user) return alert('Нужно открыть из Telegram');
+        if (!confirm('Сформировать команду? Всем участникам придёт уведомление.')) return;
+        try {
+          await api('/api/form-team/' + serviceId, { user });
+          loadServices();
+        } catch (e) {
+          alert(e.message || 'Ошибка');
+        }
+      }
+
+      function renderParticipants() {
+        const list = document.getElementById('participants-list');
+        const empty = document.getElementById('participants-empty');
+        if (!participantsData.length) {
           list.innerHTML = '';
           empty.style.display = 'block';
           return;
         }
         empty.style.display = 'none';
-        list.innerHTML = members.map(m => `
-          <li>
-            <span class="member-name">${escapeHtml(m.name)}</span>
-            <div class="member-actions">
-              <button type="button" class="btn btn-ghost btn-sm btn-danger" data-delete="${m.id}">Удалить</button>
-            </div>
-          </li>
+        list.innerHTML = participantsData.map(p => `
+          <li><span class="member-name">${(p.first_name || p.username || 'Участник').replace(/</g, '&lt;')}</span></li>
         `).join('');
-        list.querySelectorAll('[data-delete]').forEach(btn => {
-          btn.addEventListener('click', () => deleteMember(btn.dataset.delete));
-        });
-      }
-
-      function deleteMember(id) {
-        if (!confirm('Удалить этого участника из списка?')) return;
-        members = members.filter(m => m.id !== id);
-        saveMembers(members);
-        renderMembers();
-        const cleaned = {};
-        for (const [sid, team] of Object.entries(servicesData)) {
-          cleaned[sid] = {};
-          for (const [k, v] of Object.entries(team)) cleaned[sid][k] = v === id ? '' : v;
-        }
-        servicesData = cleaned;
-        saveServices(servicesData);
-      }
-
-      document.getElementById('btn-add-member').addEventListener('click', addMember);
-      document.getElementById('new-member-name').addEventListener('keydown', e => { if (e.key === 'Enter') addMember(); });
-
-      function addMember() {
-        const input = document.getElementById('new-member-name');
-        const name = (input.value || '').trim();
-        if (!name) return;
-        members.push({ id: 'm' + Date.now(), name });
-        saveMembers(members);
-        input.value = '';
-        renderMembers();
       }
 
       document.querySelectorAll('.tabs button').forEach(btn => {
-        btn.addEventListener('click', () => showScreen(btn.dataset.tab));
+        btn.addEventListener('click', () => { showScreen(btn.dataset.tab); if (btn.dataset.tab === 'participants') loadParticipants(); });
       });
 
-      function init() {
-        renderServices();
-        renderMembers();
+      async function init() {
+        await ensureMe();
+        await loadServices();
       }
       init();
     })();
