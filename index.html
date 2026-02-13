@@ -24,18 +24,21 @@
       --shadow: 0 4px 24px rgba(0,0,0,0.25);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { height: 100%; }
+    html, body {
+      height: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
     body {
       font-family: 'Manrope', -apple-system, sans-serif;
-      min-height: 100%;
-      height: 100%;
       min-height: 100vh;
       min-height: 100dvh;
       min-height: var(--tg-viewport-height, 100dvh);
       background: var(--bg);
       color: var(--text);
-      padding: 0 0 100px;
-      padding-bottom: max(100px, env(safe-area-inset-bottom));
+      padding: 0;
+      padding-top: env(safe-area-inset-top, 0);
+      padding-bottom: max(100px, env(safe-area-inset-bottom, 20px));
     }
     .app {
       max-width: 480px;
@@ -49,7 +52,7 @@
       background: var(--surface);
       padding: 16px 20px 20px;
       border-bottom: 1px solid var(--surface2);
-      padding-top: max(16px, env(safe-area-inset-top));
+      padding-top: max(16px, env(safe-area-inset-top, 0px));
     }
     header h1 {
       font-size: 1.35rem;
@@ -383,9 +386,16 @@
       const tg = window.Telegram?.WebApp;
       if (tg) {
         tg.ready();
-        tg.expand();  // на весь экран
+        tg.expand();
+        if (typeof tg.requestFullscreen === 'function') {
+          tg.requestFullscreen();  // полный экран без панелей Telegram
+        }
         tg.enableClosingConfirmation();
-        document.documentElement.style.setProperty('--tg-viewport-height', tg.viewportHeight + 'px');
+        document.documentElement.style.setProperty('--tg-viewport-height', (tg.viewportHeight || window.innerHeight) + 'px');
+        if (tg.safeAreaInset) {
+          document.documentElement.style.setProperty('--safe-top', tg.safeAreaInset.top + 'px');
+          document.documentElement.style.setProperty('--safe-bottom', tg.safeAreaInset.bottom + 'px');
+        }
       }
 
       function showScreen(id) {
