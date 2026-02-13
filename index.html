@@ -108,8 +108,9 @@
         <div class="card">
           <div class="card-title">Состав команды</div>
           <div id="preview-team-list" style="margin:16px 0;line-height:1.8"></div>
-          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px">Всем участникам придёт уведомление в личные сообщения бота с датой и составом. Убедитесь, что участники нажимали Start в боте.</p>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px">Всем участникам придёт уведомление в личные сообщения бота. Убедитесь, что участники нажимали Start в боте.</p>
           <button type="button" class="btn btn-primary" id="btn-confirm-form">Сформировать команду</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-test-notify" style="margin-top:12px;display:block">Тест: отправить мне уведомление</button>
         </div>
       </section>
     </main>
@@ -233,6 +234,7 @@
               <p>Участников: ${count}</p>
               ${partList ? '<div class="participant-list">' + partList.replace(/, /g, ' · ') + '</div>' : ''}
               ${formed ? '<p style="color:var(--success)">✅ Команда сформирована</p>' : ''}
+              ${formed && amLeader ? '<button type="button" class="btn btn-ghost btn-sm" data-unform="' + s.id + '" style="margin-top:8px">Изменить состав</button>' : ''}
               ${!formed && canParticipate ? '<button type="button" class="btn btn-primary btn-sm" data-service-id="' + s.id + '" data-date="' + s.date + '">Участвовать</button>' : ''}
               ${!formed && amLeader ? '<button type="button" class="btn btn-ghost btn-sm" data-preview="' + s.id + '" data-date="' + s.date + '" style="margin-top:8px">Посмотреть состав</button>' : ''}
               ${!formed && amLeader ? '<button type="button" class="btn btn-primary btn-sm" data-form="' + s.id + '" data-date="' + s.date + '" style="margin-top:8px">Сформировать команду</button>' : ''}
@@ -248,6 +250,22 @@
         list.querySelectorAll('[data-form]').forEach(btn => {
           btn.addEventListener('click', () => formTeam(btn.dataset.form));
         });
+        list.querySelectorAll('[data-unform]').forEach(btn => {
+          btn.addEventListener('click', () => unformTeam(btn.dataset.unform));
+        });
+      }
+
+      async function unformTeam(serviceId) {
+        const user = getCurrentUser();
+        if (!user) return alert('Нужно открыть из Telegram');
+        if (!confirm('Снять статус «сформировано»? Состав можно будет изменить и отправить уведомления заново.')) return;
+        try {
+          await api('/api/unform-team/' + serviceId, { user });
+          showScreen('services');
+          loadServices();
+        } catch (e) {
+          alert(e.message || 'Ошибка');
+        }
       }
 
       let currentPreviewServiceId = null;
@@ -267,6 +285,16 @@
       document.getElementById('btn-back-preview').addEventListener('click', () => { showScreen('services'); loadServices(); });
       document.getElementById('btn-confirm-form').addEventListener('click', () => {
         if (currentPreviewServiceId) formTeam(currentPreviewServiceId);
+      });
+      document.getElementById('btn-test-notify').addEventListener('click', async () => {
+        const user = getCurrentUser();
+        if (!user) return alert('Нужно открыть из Telegram');
+        try {
+          const res = await api('/api/test-notify', { user });
+          alert(res.ok ? 'Проверьте личные сообщения бота!' : 'Ошибка. Нажмите Start в боте и попробуйте снова.');
+        } catch (e) {
+          alert(e.message || 'Ошибка');
+        }
       });
 
       function openParticipate(serviceId, dateStr) {
