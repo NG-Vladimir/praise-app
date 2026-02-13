@@ -103,6 +103,15 @@
           <button type="button" class="btn btn-primary" id="btn-save-participate" style="margin-top:16px">Сохранить</button>
         </div>
       </section>
+      <section id="screen-preview" class="screen">
+        <div class="back-bar"><button type="button" class="btn btn-ghost btn-sm" id="btn-back-preview">← Назад</button><span id="preview-service-title" style="color:var(--text-muted);font-size:0.9rem"></span></div>
+        <div class="card">
+          <div class="card-title">Состав команды</div>
+          <div id="preview-team-list" style="margin:16px 0;line-height:1.8"></div>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px">Всем участникам придёт уведомление в личные сообщения бота с датой и составом. Убедитесь, что участники нажимали Start в боте.</p>
+          <button type="button" class="btn btn-primary" id="btn-confirm-form">Сформировать команду</button>
+        </div>
+      </section>
     </main>
   </div>
   <script>
@@ -217,27 +226,48 @@
           const amLeader = parts.leader && parts.leader.tg_user_id === myId;
           const myReg = Object.entries(parts).find(([, p]) => p.tg_user_id === myId);
           const canParticipate = !formed && !myReg;
-          const teamPreview = amLeader && count > 0 ? '<div class="team-preview"><div class="card-title">Состав команды (проверьте перед подтверждением)</div><div class="participant-list" style="white-space:pre-line;margin:12px 0">' + partListLines + '</div><p style="font-size:0.8rem;color:var(--text-muted)">Всем придёт уведомление в личные сообщения бота. Убедитесь, что участники нажимали Start в боте.</p></div>' : '';
           return `
             <div class="card">
               <span class="service-badge ${s.type}">${s.type === 'tuesday' ? 'Вторник' : 'Воскресенье'}</span>
               <h3>${formatDate(s.date)}</h3>
               <p>Участников: ${count}</p>
               ${partList ? '<div class="participant-list">' + partList.replace(/, /g, ' · ') + '</div>' : ''}
-              ${teamPreview}
               ${formed ? '<p style="color:var(--success)">✅ Команда сформирована</p>' : ''}
               ${!formed && canParticipate ? '<button type="button" class="btn btn-primary btn-sm" data-service-id="' + s.id + '" data-date="' + s.date + '">Участвовать</button>' : ''}
-              ${!formed && amLeader ? '<button type="button" class="btn btn-primary btn-sm" data-form="' + s.id + '" data-date="' + s.date + '" style="margin-top:12px">Сформировать команду</button>' : ''}
+              ${!formed && amLeader ? '<button type="button" class="btn btn-ghost btn-sm" data-preview="' + s.id + '" data-date="' + s.date + '" style="margin-top:8px">Посмотреть состав</button>' : ''}
+              ${!formed && amLeader ? '<button type="button" class="btn btn-primary btn-sm" data-form="' + s.id + '" data-date="' + s.date + '" style="margin-top:8px">Сформировать команду</button>' : ''}
             </div>
           `;
         }).join('');
         list.querySelectorAll('[data-service-id]').forEach(btn => {
           btn.addEventListener('click', () => openParticipate(btn.dataset.serviceId, btn.dataset.date));
         });
+        list.querySelectorAll('[data-preview]').forEach(btn => {
+          btn.addEventListener('click', () => openPreview(btn.dataset.preview, btn.dataset.date));
+        });
         list.querySelectorAll('[data-form]').forEach(btn => {
           btn.addEventListener('click', () => formTeam(btn.dataset.form));
         });
       }
+
+      let currentPreviewServiceId = null;
+      function openPreview(serviceId, dateStr) {
+        currentPreviewServiceId = serviceId;
+        document.getElementById('preview-service-title').textContent = formatDate(dateStr);
+        const s = servicesData.find(x => x.id === serviceId);
+        const parts = (s && s.participants) || {};
+        const lines = ROLES.map(r => {
+          const p = parts[r.id];
+          return p ? (r.label + ': ' + (p.name || '?')) : (r.label + ': —');
+        }).join('\n');
+        document.getElementById('preview-team-list').textContent = lines || 'Пока никого нет';
+        document.getElementById('btn-confirm-form').disabled = Object.keys(parts).length === 0;
+        showScreen('preview');
+      }
+      document.getElementById('btn-back-preview').addEventListener('click', () => { showScreen('services'); loadServices(); });
+      document.getElementById('btn-confirm-form').addEventListener('click', () => {
+        if (currentPreviewServiceId) formTeam(currentPreviewServiceId);
+      });
 
       function openParticipate(serviceId, dateStr) {
         currentParticipateServiceId = serviceId;
@@ -278,10 +308,7 @@
       async function formTeam(serviceId) {
         const user = getCurrentUser();
         if (!user) return alert('Нужно открыть из Telegram');
-        const s = servicesData.find(x => x.id === serviceId);
-        const parts = (s && s.participants) || {};
-        const list = Object.entries(parts).map(([role, p]) => ROLES.find(r => r.id === role)?.label + ': ' + (p.name || '?')).join('\n');
-        if (!confirm('Сформировать команду?\n\n' + (list || '(пусто)') + '\n\nВсем придёт уведомление в личные сообщения бота.')) return;
+        if (!confirm('Отправить уведомления всем участникам?')) return;
         try {
           const res = await api('/api/form-team/' + serviceId, { user });
           if (res.total !== undefined) {
