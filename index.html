@@ -61,6 +61,7 @@
     .service-badge.tuesday { background: rgba(212, 168, 83, 0.25); color: var(--accent); }
     .service-badge.sunday { background: rgba(74, 222, 128, 0.2); color: var(--success); }
     .participant-list { font-size: 0.9rem; color: var(--text-muted); margin: 8px 0; }
+    .team-preview { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--surface2); }
     .participant-list span { display: inline-block; margin-right: 8px; margin-bottom: 4px; }
     .role-row { display: flex; align-items: center; padding: 12px 16px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 8px; gap: 12px; }
     .role-row input[type="radio"] { width: 18px; height: 18px; accent-color: var(--accent); }
@@ -210,20 +211,23 @@
         list.innerHTML = servicesData.map(s => {
           const parts = s.participants || {};
           const partList = Object.entries(parts).map(([role, p]) => ROLES.find(r => r.id === role)?.label + ': ' + (p.name || '?')).join(', ');
+          const partListLines = Object.entries(parts).map(([role, p]) => ROLES.find(r => r.id === role)?.label + ': ' + (p.name || '?')).join('\n');
           const count = s.count || 0;
           const formed = s.formed;
           const amLeader = parts.leader && parts.leader.tg_user_id === myId;
           const myReg = Object.entries(parts).find(([, p]) => p.tg_user_id === myId);
           const canParticipate = !formed && !myReg;
+          const teamPreview = amLeader && count > 0 ? '<div class="team-preview"><div class="card-title">Состав команды (проверьте перед подтверждением)</div><div class="participant-list" style="white-space:pre-line;margin:12px 0">' + partListLines + '</div><p style="font-size:0.8rem;color:var(--text-muted)">Всем придёт уведомление в личные сообщения бота. Убедитесь, что участники нажимали Start в боте.</p></div>' : '';
           return `
             <div class="card">
               <span class="service-badge ${s.type}">${s.type === 'tuesday' ? 'Вторник' : 'Воскресенье'}</span>
               <h3>${formatDate(s.date)}</h3>
               <p>Участников: ${count}</p>
-              ${partList ? '<div class="participant-list">' + partList + '</div>' : ''}
+              ${partList ? '<div class="participant-list">' + partList.replace(/, /g, ' · ') + '</div>' : ''}
+              ${teamPreview}
               ${formed ? '<p style="color:var(--success)">✅ Команда сформирована</p>' : ''}
               ${!formed && canParticipate ? '<button type="button" class="btn btn-primary btn-sm" data-service-id="' + s.id + '" data-date="' + s.date + '">Участвовать</button>' : ''}
-              ${!formed && amLeader ? '<button type="button" class="btn btn-ghost btn-sm" data-form="' + s.id + '" style="margin-top:8px">Сформировать команду</button>' : ''}
+              ${!formed && amLeader ? '<button type="button" class="btn btn-primary btn-sm" data-form="' + s.id + '" data-date="' + s.date + '" style="margin-top:12px">Сформировать команду</button>' : ''}
             </div>
           `;
         }).join('');
@@ -274,9 +278,20 @@
       async function formTeam(serviceId) {
         const user = getCurrentUser();
         if (!user) return alert('Нужно открыть из Telegram');
-        if (!confirm('Сформировать команду? Всем участникам придёт уведомление.')) return;
+        const s = servicesData.find(x => x.id === serviceId);
+        const parts = (s && s.participants) || {};
+        const list = Object.entries(parts).map(([role, p]) => ROLES.find(r => r.id === role)?.label + ': ' + (p.name || '?')).join('\n');
+        if (!confirm('Сформировать команду?\n\n' + (list || '(пусто)') + '\n\nВсем придёт уведомление в личные сообщения бота.')) return;
         try {
-          await api('/api/form-team/' + serviceId, { user });
+          const res = await api('/api/form-team/' + serviceId, { user });
+          if (res.total !== undefined) {
+            if (res.notified < res.total) {
+              alert('Готово! Отправлено ' + res.notified + ' из ' + res.total + '. Кто не получил — нажмите Start в боте.');
+            } else {
+              alert('Готово! Всем ' + res.notified + ' участникам отправлено уведомление.');
+            }
+          }
+          showScreen('services');
           loadServices();
         } catch (e) {
           alert(e.message || 'Ошибка');
